@@ -18,7 +18,7 @@ export class Login {
 
     login() {
         // Login fixo só pra exemplo
-        if (this.username === 'user' && this.password === '123') {
+        if (this.username === 'IRTerraco' && this.password === 'Irineu') {
             this.router.navigate(['/agenda']);
         } else {
             alert('Usuário ou senha inválidos');
