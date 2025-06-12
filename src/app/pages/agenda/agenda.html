@@ -1,0 +1,38 @@
+<div class="agenda-container">
+    <h2>Agenda de Aluguéis</h2>
+
+    <!-- Calendário interativo -->
+    <full-calendar [options]="calendarOptions"></full-calendar>
+
+    <!-- Formulário de cadastro, aparece quando uma data é selecionada -->
+    <div *ngIf="selectedDate" class="rental-form">
+        <h3>Adicionar aluguel para {{ selectedDate }}</h3>
+
+        <label>Nome:</label>
+        <input [(ngModel)]="name" type="text" />
+
+        <label for="cpf">CPF:</label>
+        <input type="text" id="cpf" name="cpf" [(ngModel)]="cpf" placeholder="Digite o CPF" mask="000.000.000-00" />
+
+        <label>Valor (R$):</label>
+        <input [(ngModel)]="value" type="number" />
+
+        <!-- Botões de adicionar/atualizar -->
+        <button *ngIf="!editando" (click)="addRental()">Adicionar</button>
+        <button *ngIf="editando" (click)="atualizarRental()">Atualizar</button>
+        <button *ngIf="editando" (click)="cancelarEdicao()">Cancelar</button>
+
+        <!-- Lista de aluguéis -->
+        <div class="rentals-list" *ngIf="getRentalsForDate(selectedDate).length > 0">
+            <h4>Aluguéis para {{ selectedDate }}</h4>
+            <ul>
+                <li *ngFor="let r of getRentalsForDate(selectedDate)">
+                    {{ r.nome }} - R$ {{ r.valor.toFixed(2) }} - {{ r.cpf | cpfMask }}
+                    <button (click)="editarRental(r)">Editar</button>
+                    <button (click)="excluirRental(r)">Excluir</button>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</div>

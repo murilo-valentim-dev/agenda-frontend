@@ -1,0 +1,114 @@
+.agenda-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.agenda-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+
+.rental-form {
+    margin-top: 1.5rem;
+}
+
+.rental-form h3 {
+    color: #444;
+    margin-bottom: 1rem;
+}
+
+.rental-form label {
+    display: block;
+    margin-top: 0.75rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.rental-form input {
+    width: 100%;
+    padding: 0.6rem;
+    margin-top: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.rental-form input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.rental-form button {
+    margin-top: 1.2rem;
+    padding: 0.75rem;
+    width: 100%;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.rental-form button:hover {
+    background-color: #0056b3;
+}
+
+.rentals-list {
+    margin-top: 2rem;
+}
+
+.rentals-list h4 {
+    margin-bottom: 0.8rem;
+    color: #444;
+}
+
+.rentals-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.rentals-list li {
+    background-color: #e9ecef;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+input[type="date"] {
+    width: 30%;
+    padding: 0.6rem;
+    margin-top: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    background-color: white;
+    color: #333;
+    appearance: none;
+    margin-left: 1rem;
+    /* Remove estilo padrão (parcialmente) */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+}
+
+input[type="date"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(40%) sepia(40%) saturate(300%) hue-rotate(200deg);
+    cursor: pointer;
+}
