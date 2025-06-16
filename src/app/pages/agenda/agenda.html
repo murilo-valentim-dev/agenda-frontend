@@ -4,6 +4,11 @@
     <!-- Calendário interativo -->
     <full-calendar [options]="calendarOptions"></full-calendar>
 
+    <!-- ✅ Legenda visual -->
+    <div class="legend mt-3">
+        <span class="occupied-color me-2"></span> Dia com aluguel (🏠)
+    </div>
+
     <!-- Formulário de cadastro, aparece quando uma data é selecionada -->
     <div *ngIf="selectedDate" class="rental-form">
         <h3>Adicionar aluguel para {{ selectedDate }}</h3>
@@ -33,6 +38,5 @@
                 </li>
             </ul>
         </div>
-
     </div>
 </div>

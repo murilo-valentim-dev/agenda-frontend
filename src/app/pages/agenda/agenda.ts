@@ -37,10 +37,13 @@ export class Agenda {
         plugins: [dayGridPlugin, interactionPlugin],
         events: [],
         dateClick: this.onDateClick.bind(this),
-        locale: 'pt-br'
+        locale: 'pt-br',
+        eventContent: this.customEventContent.bind(this) // ícone no evento
     };
 
-    constructor(private aluguelService: AluguelService) { }
+    constructor(private aluguelService: AluguelService) {
+        this.loadAllRentals(); // carrega todos os eventos ao iniciar
+    }
 
     onDateClick(arg: { dateStr: string }) {
         this.selectedDate = arg.dateStr;
@@ -61,19 +64,46 @@ export class Agenda {
         }
     }
 
+    // 🔄 Carrega os aluguéis do dia selecionado
     loadRentals(date: string) {
         this.aluguelService.listarPorData(date).subscribe({
             next: (data: Aluguel[]) => {
                 this.rentals = data;
-
-                // Atualiza o calendário com os eventos da data
-                this.calendarOptions.events = data.map((aluguel: Aluguel): EventInput => ({
-                    title: aluguel.nome,
-                    date: aluguel.data
-                }));
             },
             error: (err: any) => console.error('Erro ao carregar aluguéis', err)
         });
+    }
+
+    // 🔄 Carrega todos os aluguéis para exibir no calendário
+    loadAllRentals() {
+        this.aluguelService.listarTodos().subscribe({
+            next: (data: Aluguel[]) => {
+                this.calendarOptions.events = data.map((aluguel: Aluguel): EventInput => ({
+                    title: aluguel.nome,
+                    date: aluguel.data,
+                    backgroundColor: '#f87171', // vermelho claro
+                    borderColor: '#dc2626',
+                    textColor: '#fff'
+                }));
+            },
+            error: (err: any) => console.error('Erro ao carregar eventos do calendário', err)
+        });
+    }
+
+    // 🏠 Exibe ícone no evento do calendário
+    customEventContent(eventInfo: any) {
+        const icon = document.createElement('span');
+        icon.innerText = '🏠';
+        icon.style.marginRight = '4px';
+
+        const name = document.createElement('span');
+        name.innerText = eventInfo.event.title;
+
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(icon);
+        fragment.appendChild(name);
+
+        return { domNodes: [fragment] };
     }
 
     addRental() {
@@ -92,6 +122,7 @@ export class Agenda {
         this.aluguelService.adicionar(novoAluguel).subscribe({
             next: () => {
                 this.loadRentals(this.selectedDate!);
+                this.loadAllRentals(); // atualiza eventos do calendário
                 this.name = '';
                 this.value = null;
                 this.cpf = '';
@@ -104,21 +135,18 @@ export class Agenda {
         return this.rentals.filter((r: Aluguel) => r.data.startsWith(date));
     }
 
-    // Novas propriedades
     editando: boolean = false;
     aluguelEditando: Aluguel | null = null;
 
-    // Começar edição
     editarRental(aluguel: Aluguel) {
         this.editando = true;
-        this.aluguelEditando = { ...aluguel }; // cria uma cópia
+        this.aluguelEditando = { ...aluguel };
         this.name = aluguel.nome;
         this.cpf = aluguel.cpf;
         this.value = aluguel.valor;
         this.selectedDate = aluguel.data;
     }
 
-    // Confirmar atualização
     atualizarRental() {
         if (!this.aluguelEditando) return;
 
@@ -132,13 +160,13 @@ export class Agenda {
         this.aluguelService.atualizar(aluguelAtualizado).subscribe({
             next: () => {
                 this.loadRentals(this.selectedDate!);
+                this.loadAllRentals(); // atualiza calendário
                 this.cancelarEdicao();
             },
             error: (err) => console.error('Erro ao atualizar aluguel', err)
         });
     }
 
-    // Cancelar edição
     cancelarEdicao() {
         this.editando = false;
         this.aluguelEditando = null;
@@ -147,14 +175,15 @@ export class Agenda {
         this.value = null;
     }
 
-    // Excluir aluguel
     excluirRental(aluguel: Aluguel) {
         if (confirm('Tem certeza que deseja excluir este aluguel?')) {
             this.aluguelService.excluir(aluguel.id!).subscribe({
-                next: () => this.loadRentals(this.selectedDate!),
+                next: () => {
+                    this.loadRentals(this.selectedDate!);
+                    this.loadAllRentals(); // atualiza calendário
+                },
                 error: (err) => console.error('Erro ao excluir aluguel', err)
             });
         }
     }
-
 }

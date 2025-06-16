@@ -112,3 +112,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(40%) sepia(40%) saturate(300%) hue-rotate(200deg);
     cursor: pointer;
 }
+
+.legend {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.occupied-color {
+    width: 16px;
+    height: 16px;
+    background-color: #f87171;
+    border: 1px solid #dc2626;
+    border-radius: 3px;
+    display: inline-block;
+    margin-right: 6px;
+}
