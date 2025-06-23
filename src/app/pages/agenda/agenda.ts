@@ -78,33 +78,37 @@ export class Agenda {
     loadAllRentals() {
         this.aluguelService.listarTodos().subscribe({
             next: (data: Aluguel[]) => {
-                this.calendarOptions.events = data.map((aluguel: Aluguel): EventInput => ({
-                    title: aluguel.nome,
-                    date: aluguel.data,
-                    backgroundColor: '#f87171', // vermelho claro
-                    borderColor: '#dc2626',
-                    textColor: '#fff'
-                }));
+                this.calendarOptions.events = [
+                    ...data.map((aluguel: Aluguel): EventInput => ({
+                        start: aluguel.data,
+                        display: 'background', // Fundo vermelho no dia inteiro
+                        backgroundColor: '#f87171'
+                    })),
+                    ...data.map((aluguel: Aluguel): EventInput => ({
+                        title: '🏠', // Apenas o ícone da casinha no evento
+                        date: aluguel.data,
+                        backgroundColor: '#f87171',
+                        borderColor: '#dc2626',
+                        textColor: '#fff'
+                    }))
+                ];
             },
             error: (err: any) => console.error('Erro ao carregar eventos do calendário', err)
         });
     }
 
+
     // 🏠 Exibe ícone no evento do calendário
     customEventContent(eventInfo: any) {
         const icon = document.createElement('span');
         icon.innerText = '🏠';
-        icon.style.marginRight = '4px';
-
-        const name = document.createElement('span');
-        name.innerText = eventInfo.event.title;
 
         const fragment = document.createDocumentFragment();
         fragment.appendChild(icon);
-        fragment.appendChild(name);
 
         return { domNodes: [fragment] };
     }
+
 
     addRental() {
         if (!this.selectedDate || !this.name || !this.cpf || this.value === null) {
