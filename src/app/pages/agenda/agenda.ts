@@ -38,7 +38,8 @@ export class Agenda {
         events: [],
         dateClick: this.onDateClick.bind(this),
         locale: 'pt-br',
-        eventContent: this.customEventContent.bind(this) // ícone no evento
+        eventContent: this.customEventContent.bind(this), // ícone no evento
+        eventDisplay: 'block' // garante que eventos "background" sejam aceitos
     };
 
     constructor(private aluguelService: AluguelService) {
@@ -78,24 +79,28 @@ export class Agenda {
     loadAllRentals() {
         this.aluguelService.listarTodos().subscribe({
             next: (data: Aluguel[]) => {
-                this.calendarOptions.events = [
-                    ...data.map((aluguel: Aluguel): EventInput => ({
-                        start: aluguel.data,
-                        display: 'background', // Fundo vermelho no dia inteiro
-                        backgroundColor: '#f87171'
-                    })),
-                    ...data.map((aluguel: Aluguel): EventInput => ({
-                        title: '🏠', // Apenas o ícone da casinha no evento
-                        date: aluguel.data,
-                        backgroundColor: '#f87171',
-                        borderColor: '#dc2626',
-                        textColor: '#fff'
-                    }))
-                ];
+                // Garante que o Angular detecte alteração de referência
+                setTimeout(() => {
+                    this.calendarOptions.events = [
+                        ...data.map((aluguel: Aluguel): EventInput => ({
+                            start: aluguel.data,
+                            display: 'background',
+                            backgroundColor: '#f87171'
+                        })),
+                        ...data.map((aluguel: Aluguel): EventInput => ({
+                            title: '🏠',
+                            date: aluguel.data,
+                            backgroundColor: '#f87171',
+                            borderColor: '#dc2626',
+                            textColor: '#fff'
+                        }))
+                    ];
+                }, 0);
             },
             error: (err: any) => console.error('Erro ao carregar eventos do calendário', err)
         });
     }
+
 
 
     // 🏠 Exibe ícone no evento do calendário
