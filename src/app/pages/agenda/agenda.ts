@@ -8,7 +8,7 @@ import { CpfMaskPipe } from '../../pipes/cpf-mask.pipe';
 import { FullCalendarModule, FullCalendarComponent } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { CalendarOptions, EventInput } from '@fullcalendar/core';
+import { CalendarOptions } from '@fullcalendar/core';
 
 @Component({
     selector: 'app-agenda',
@@ -40,13 +40,10 @@ export class Agenda {
         events: [],
         dateClick: this.onDateClick.bind(this),
         locale: 'pt-br',
-        eventContent: this.customEventContent.bind(this),
         eventDisplay: 'block'
     };
 
-    constructor(private aluguelService: AluguelService) {
-        // Nada aqui, vamos carregar eventos só depois que o ViewChild estiver pronto
-    }
+    constructor(private aluguelService: AluguelService) { }
 
     ngAfterViewInit() {
         this.loadAllRentals();
@@ -84,18 +81,24 @@ export class Agenda {
                 const calendarApi = this.calendarComponent.getApi();
                 calendarApi.removeAllEvents();
 
+                const datasUnicas = new Set<string>();
+
                 data.forEach((aluguel) => {
+                    datasUnicas.add(aluguel.data);
+                });
+
+                datasUnicas.forEach((data) => {
+                    // Evento de fundo para destacar o dia
                     calendarApi.addEvent({
-                        start: aluguel.data,
+                        start: data,
                         display: 'background',
                         backgroundColor: '#f87171'
                     });
-                });
 
-                data.forEach((aluguel) => {
+                    // Evento visível com o ícone
                     calendarApi.addEvent({
                         title: '🏠',
-                        date: aluguel.data,
+                        date: data,
                         backgroundColor: '#f87171',
                         borderColor: '#dc2626',
                         textColor: '#fff'
@@ -104,14 +107,6 @@ export class Agenda {
             },
             error: (err) => console.error('Erro ao carregar eventos', err)
         });
-    }
-
-    customEventContent(eventInfo: any) {
-        const icon = document.createElement('span');
-        icon.innerText = '🏠';
-        const fragment = document.createDocumentFragment();
-        fragment.appendChild(icon);
-        return { domNodes: [fragment] };
     }
 
     addRental() {
