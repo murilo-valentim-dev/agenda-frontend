@@ -1,8 +1,8 @@
 <div class="agenda-container">
     <h2>Agenda de Aluguéis</h2>
 
-    <!-- Calendário interativo -->
-    <full-calendar [options]="calendarOptions"></full-calendar>
+    <!-- Calendário interativo com referência para o ViewChild -->
+    <full-calendar #calendar [options]="calendarOptions"></full-calendar>
 
     <!-- ✅ Legenda visual -->
     <div class="legend mt-3">

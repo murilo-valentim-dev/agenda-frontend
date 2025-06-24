@@ -1,5 +1,6 @@
 .agenda-container {
     max-width: 600px;
+    width: 90%;
     margin: 50px auto;
     padding: 2rem;
     background-color: #f9f9f9;
@@ -16,16 +17,20 @@
 
 .rental-form {
     margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
 }
 
 .rental-form h3 {
+    grid-column: span 2;
     color: #444;
     margin-bottom: 1rem;
 }
 
 .rental-form label {
     display: block;
-    margin-top: 0.75rem;
+    margin-top: 0;
     font-weight: 600;
     color: #555;
 }
@@ -37,12 +42,40 @@
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 1rem;
-    transition: border-color 0.3s;
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .rental-form input:focus {
-    border-color: #007bff;
+    border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     outline: none;
+}
+
+input[type="date"] {
+    width: 100%;
+    padding: 0.6rem;
+    margin-top: 0.3rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: white;
+    color: #333;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+}
+
+input[type="date"]:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    outline: none;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(40%) sepia(40%) saturate(300%) hue-rotate(200deg);
+    cursor: pointer;
 }
 
 .rental-form button {
@@ -57,6 +90,7 @@
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s;
+    grid-column: span 2;
 }
 
 .rental-form button:hover {
@@ -83,41 +117,52 @@
     margin-bottom: 0.5rem;
     border-radius: 6px;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-input[type="date"] {
-    width: 30%;
-    padding: 0.6rem;
-    margin-top: 0.3rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
-    transition: border-color 0.3s;
-    background-color: white;
-    color: #333;
-    appearance: none;
-    margin-left: 1rem;
-    /* Remove estilo padrão (parcialmente) */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    position: relative;
-}
-
-input[type="date"]:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(40%) sepia(40%) saturate(300%) hue-rotate(200deg);
+.rentals-list li button {
+    margin-left: 10px;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.rentals-list li button:first-child {
+    background-color: #28a745;
+    /* verde para editar */
+    color: white;
+}
+
+.rentals-list li button:first-child:hover {
+    background-color: #218838;
+}
+
+.rentals-list li button:last-child {
+    background-color: #dc3545;
+    /* vermelho para excluir */
+    color: white;
+}
+
+.rentals-list li button:last-child:hover {
+    background-color: #c82333;
+}
+
+full-calendar {
+    display: block;
+    margin-bottom: 1rem;
 }
 
 .legend {
     display: flex;
     align-items: center;
-    font-size: 14px;
-    margin-top: 10px;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    color: #555;
 }
 
 .occupied-color {
@@ -128,4 +173,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     border-radius: 3px;
     display: inline-block;
     margin-right: 6px;
+}
+
+@media (max-width: 480px) {
+    .rental-form {
+        grid-template-columns: 1fr;
+    }
 }

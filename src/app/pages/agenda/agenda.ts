@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Aluguel, AluguelService } from '../../services/aluguel';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { CpfMaskPipe } from '../../pipes/cpf-mask.pipe';
 
-import { FullCalendarModule } from '@fullcalendar/angular';
+import { FullCalendarModule, FullCalendarComponent } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
@@ -25,6 +25,8 @@ import { CalendarOptions, EventInput } from '@fullcalendar/core';
     styleUrls: ['./agenda.css']
 })
 export class Agenda {
+    @ViewChild(FullCalendarComponent) calendarComponent!: FullCalendarComponent;
+
     selectedDate: string | null = null;
     rentals: Aluguel[] = [];
 
@@ -38,12 +40,16 @@ export class Agenda {
         events: [],
         dateClick: this.onDateClick.bind(this),
         locale: 'pt-br',
-        eventContent: this.customEventContent.bind(this), // ícone no evento
-        eventDisplay: 'block' // garante que eventos "background" sejam aceitos
+        eventContent: this.customEventContent.bind(this),
+        eventDisplay: 'block'
     };
 
     constructor(private aluguelService: AluguelService) {
-        this.loadAllRentals(); // carrega todos os eventos ao iniciar
+        // Nada aqui, vamos carregar eventos só depois que o ViewChild estiver pronto
+    }
+
+    ngAfterViewInit() {
+        this.loadAllRentals();
     }
 
     onDateClick(arg: { dateStr: string }) {
@@ -65,55 +71,48 @@ export class Agenda {
         }
     }
 
-    // 🔄 Carrega os aluguéis do dia selecionado
     loadRentals(date: string) {
         this.aluguelService.listarPorData(date).subscribe({
-            next: (data: Aluguel[]) => {
-                this.rentals = data;
-            },
-            error: (err: any) => console.error('Erro ao carregar aluguéis', err)
+            next: (data) => this.rentals = data,
+            error: (err) => console.error('Erro ao carregar aluguéis', err)
         });
     }
 
-    // 🔄 Carrega todos os aluguéis para exibir no calendário
     loadAllRentals() {
         this.aluguelService.listarTodos().subscribe({
-            next: (data: Aluguel[]) => {
-                // Garante que o Angular detecte alteração de referência
-                setTimeout(() => {
-                    this.calendarOptions.events = [
-                        ...data.map((aluguel: Aluguel): EventInput => ({
-                            start: aluguel.data,
-                            display: 'background',
-                            backgroundColor: '#f87171'
-                        })),
-                        ...data.map((aluguel: Aluguel): EventInput => ({
-                            title: '🏠',
-                            date: aluguel.data,
-                            backgroundColor: '#f87171',
-                            borderColor: '#dc2626',
-                            textColor: '#fff'
-                        }))
-                    ];
-                }, 0);
+            next: (data) => {
+                const calendarApi = this.calendarComponent.getApi();
+                calendarApi.removeAllEvents();
+
+                data.forEach((aluguel) => {
+                    calendarApi.addEvent({
+                        start: aluguel.data,
+                        display: 'background',
+                        backgroundColor: '#f87171'
+                    });
+                });
+
+                data.forEach((aluguel) => {
+                    calendarApi.addEvent({
+                        title: '🏠',
+                        date: aluguel.data,
+                        backgroundColor: '#f87171',
+                        borderColor: '#dc2626',
+                        textColor: '#fff'
+                    });
+                });
             },
-            error: (err: any) => console.error('Erro ao carregar eventos do calendário', err)
+            error: (err) => console.error('Erro ao carregar eventos', err)
         });
     }
 
-
-
-    // 🏠 Exibe ícone no evento do calendário
     customEventContent(eventInfo: any) {
         const icon = document.createElement('span');
         icon.innerText = '🏠';
-
         const fragment = document.createDocumentFragment();
         fragment.appendChild(icon);
-
         return { domNodes: [fragment] };
     }
-
 
     addRental() {
         if (!this.selectedDate || !this.name || !this.cpf || this.value === null) {
@@ -131,20 +130,20 @@ export class Agenda {
         this.aluguelService.adicionar(novoAluguel).subscribe({
             next: () => {
                 this.loadRentals(this.selectedDate!);
-                this.loadAllRentals(); // atualiza eventos do calendário
+                this.loadAllRentals();
                 this.name = '';
                 this.value = null;
                 this.cpf = '';
             },
-            error: (err: any) => console.error('Erro ao adicionar aluguel', err)
+            error: (err) => console.error('Erro ao adicionar aluguel', err)
         });
     }
 
     getRentalsForDate(date: string): Aluguel[] {
-        return this.rentals.filter((r: Aluguel) => r.data.startsWith(date));
+        return this.rentals.filter((r) => r.data.startsWith(date));
     }
 
-    editando: boolean = false;
+    editando = false;
     aluguelEditando: Aluguel | null = null;
 
     editarRental(aluguel: Aluguel) {
@@ -169,7 +168,7 @@ export class Agenda {
         this.aluguelService.atualizar(aluguelAtualizado).subscribe({
             next: () => {
                 this.loadRentals(this.selectedDate!);
-                this.loadAllRentals(); // atualiza calendário
+                this.loadAllRentals();
                 this.cancelarEdicao();
             },
             error: (err) => console.error('Erro ao atualizar aluguel', err)
@@ -189,7 +188,7 @@ export class Agenda {
             this.aluguelService.excluir(aluguel.id!).subscribe({
                 next: () => {
                     this.loadRentals(this.selectedDate!);
-                    this.loadAllRentals(); // atualiza calendário
+                    this.loadAllRentals();
                 },
                 error: (err) => console.error('Erro ao excluir aluguel', err)
             });
