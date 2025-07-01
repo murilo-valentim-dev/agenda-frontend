@@ -3,10 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-
 export interface Aluguel {
   id?: number;
-  data: string;
+  data: string;  // Pode ser string ISO no formato UTC
   nome: string;
   cpf: string;
   valor: number;
@@ -18,7 +17,6 @@ export interface Aluguel {
 export class AluguelService {
 
   private apiUrl = `${environment.apiUrl}/api/aluguel`;
-
 
   constructor(private http: HttpClient) { }
 
@@ -34,7 +32,10 @@ export class AluguelService {
 
   // Adiciona um novo aluguel
   adicionar(aluguel: Aluguel): Observable<Aluguel> {
-    return this.http.post<Aluguel>(this.apiUrl, aluguel);
+    const dataUtc = new Date(aluguel.data).toISOString();
+    const aluguelFormatado = { ...aluguel, data: dataUtc };
+
+    return this.http.post<Aluguel>(this.apiUrl, aluguelFormatado);
   }
 
   // Atualiza um aluguel existente
@@ -42,7 +43,11 @@ export class AluguelService {
     if (!aluguel.id) {
       throw new Error('ID do aluguel é obrigatório para atualização.');
     }
-    return this.http.put<Aluguel>(`${this.apiUrl}/${aluguel.id}`, aluguel);
+
+    const dataUtc = new Date(aluguel.data).toISOString();
+    const aluguelFormatado = { ...aluguel, data: dataUtc };
+
+    return this.http.put<Aluguel>(`${this.apiUrl}/${aluguel.id}`, aluguelFormatado);
   }
 
   // Exclui um aluguel pelo ID

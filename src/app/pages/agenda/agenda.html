@@ -1,34 +1,36 @@
 <div class="agenda-container">
     <h2>Agenda de Aluguéis</h2>
 
-    <!-- Calendário interativo com referência para o ViewChild -->
+    <!-- Calendário interativo -->
     <full-calendar #calendar [options]="calendarOptions"></full-calendar>
 
-    <!-- ✅ Legenda visual -->
+    <!-- Legenda visual para dias ocupados -->
     <div class="legend mt-3">
         <span class="occupied-color me-2"></span> Dia com aluguel (🏠)
     </div>
 
-    <!-- Formulário de cadastro, aparece quando uma data é selecionada -->
-    <div *ngIf="selectedDate" class="rental-form">
+    <!-- Formulário só aparece se uma data está selecionada -->
+    <div *ngIf="selectedDate" class="rental-form mt-3">
         <h3>Adicionar aluguel para {{ selectedDate }}</h3>
 
-        <label>Nome:</label>
-        <input [(ngModel)]="name" type="text" />
+        <label for="name">Nome:</label>
+        <input id="name" [(ngModel)]="name" type="text" />
 
         <label for="cpf">CPF:</label>
-        <input type="text" id="cpf" name="cpf" [(ngModel)]="cpf" placeholder="Digite o CPF" mask="000.000.000-00" />
+        <input id="cpf" type="text" name="cpf" [(ngModel)]="cpf" placeholder="Digite o CPF" mask="000.000.000-00" />
 
-        <label>Valor (R$):</label>
-        <input [(ngModel)]="value" type="number" />
+        <label for="value">Valor (R$):</label>
+        <input id="value" [(ngModel)]="value" type="number" min="0" step="0.01" />
 
-        <!-- Botões de adicionar/atualizar -->
-        <button *ngIf="!editando" (click)="addRental()">Adicionar</button>
-        <button *ngIf="editando" (click)="atualizarRental()">Atualizar</button>
-        <button *ngIf="editando" (click)="cancelarEdicao()">Cancelar</button>
+        <!-- Botões para adicionar, atualizar e cancelar -->
+        <div class="buttons mt-2">
+            <button *ngIf="!editando" (click)="addRental()">Adicionar</button>
+            <button *ngIf="editando" (click)="atualizarRental()">Atualizar</button>
+            <button *ngIf="editando" (click)="cancelarEdicao()">Cancelar</button>
+        </div>
 
-        <!-- Lista de aluguéis -->
-        <div class="rentals-list" *ngIf="getRentalsForDate(selectedDate).length > 0">
+        <!-- Lista de aluguéis para a data selecionada -->
+        <div class="rentals-list mt-3" *ngIf="getRentalsForDate(selectedDate).length > 0">
             <h4>Aluguéis para {{ selectedDate }}</h4>
             <ul>
                 <li *ngFor="let r of getRentalsForDate(selectedDate)">

@@ -84,7 +84,12 @@ export class Agenda {
                 const datasUnicas = new Set<string>();
 
                 data.forEach((aluguel) => {
-                    datasUnicas.add(aluguel.data);
+                    // Converte a data UTC para objeto Date local
+                    const dataLocal = new Date(aluguel.data);
+                    // Extrai a parte da data no formato 'YYYY-MM-DD' para o fuso local
+                    const dataFormatada = dataLocal.toISOString().split('T')[0];
+
+                    datasUnicas.add(dataFormatada);
                 });
 
                 datasUnicas.forEach((data) => {
@@ -115,8 +120,11 @@ export class Agenda {
             return;
         }
 
+        // Cria a data UTC no início do dia selecionado
+        const dataUtc = new Date(this.selectedDate + 'T00:00:00').toISOString();
+
         const novoAluguel: Aluguel = {
-            data: this.selectedDate,
+            data: dataUtc,
             nome: this.name,
             cpf: this.cpf,
             valor: this.value
@@ -147,17 +155,24 @@ export class Agenda {
         this.name = aluguel.nome;
         this.cpf = aluguel.cpf;
         this.value = aluguel.valor;
-        this.selectedDate = aluguel.data;
+
+        // Converte a data UTC para string YYYY-MM-DD local para exibir no input
+        const dataLocal = new Date(aluguel.data);
+        this.selectedDate = dataLocal.toISOString().split('T')[0];
     }
 
     atualizarRental() {
         if (!this.aluguelEditando) return;
 
+        // Data UTC no início do dia selecionado
+        const dataUtc = new Date(this.selectedDate + 'T00:00:00').toISOString();
+
         const aluguelAtualizado: Aluguel = {
             ...this.aluguelEditando,
             nome: this.name,
             cpf: this.cpf,
-            valor: this.value!
+            valor: this.value!,
+            data: dataUtc
         };
 
         this.aluguelService.atualizar(aluguelAtualizado).subscribe({
